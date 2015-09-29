@@ -37,7 +37,7 @@ ROUND_CUT_PERCENT = float(0.05)
 
 # Redis
 #REDIS_CLIENT = redis.Redis(unix_socket_path='/tmp/redis.sock')
-REDIS_CLIENT = redis.StrictRedis(host='localhost', port=6379, db=0)
+REDIS_CLIENT = redis.Redis(host='redis', port=6379)
 REDIS_ROUND_BETS = 'BCJP_ROUND_BETS'
 REDIS_ROUND_LOCK = 'BCJP_ROUND_LOCK'
 REDIS_ROUND_LOCK_COUNT = 'BCJP_ROUND_LOCK_COUNT'
