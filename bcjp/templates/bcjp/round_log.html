@@ -1,0 +1,28 @@
+{% spaceless %}
+    {% for r in round_logs %}
+        {% if r.is_bet %}
+            <div class="row betting_row">
+                <small>{% autoescape off %}{{ r.message_with_btc }}{% endautoescape %}</small>
+                <div class="betting_date">
+                    <small>{{ r.created_on }}</small>
+                </div>
+            </div>
+        {% elif r.is_start %}
+            <div class="row betting_row text-center text-danger">
+                <small>{{ r.message }}</small>
+            </div>
+        {% elif r.is_end %}
+            <div class="row text-center text-danger">
+                <small>{{ r.message }}</small>
+            </div>
+        {% elif r.is_winner %}
+            <div class="row betting_row text-center text-success">
+                <small>{% autoescape off %}{{ r.message_with_btc }}{% endautoescape %}</small>
+            </div>
+        {% else %}
+            <div class="row betting_row text-center text-muted bg-warning">
+                <strong>{{ r.message }}</strong>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endspaceless %}

@@ -1,0 +1,13 @@
+.betting_row {
+    padding-bottom: 5px; 
+    padding-top: 5px;
+}
+
+.betting_date {
+    float: right;
+}
+
+#roundProgressColumnAmount {
+    font-size: 55px;
+    color: rgb(135, 206, 235);
+}

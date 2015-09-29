@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bitcoin Jackpot</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/bcjp.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'css/perfect-scrollbar.min.css' %}" type="text/css">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/bcjp.js' %}"></script>
+        <script src="{% static 'js/jquery.knob.min.js' %}"></script>
+        <script src="{% static 'js/validator.js' %}"></script>
+        <script src="{% static 'js/perfect-scrollbar.jquery.min.js' %}"></script>
+        <script type="text/javascript">
+        $(function()  {
+            $(".dial").knob({
+                "width": $("#roundProgressColumn").width()-1,
+                "height": $("#roundProgressColumn").width()-1,
+                "thickness": 0.1
+            });
+
+            $("#roundLogColumn").css('height',$("#roundProgressDivHolder").height());
+            $('#roundLogColumn').perfectScrollbar();
+
+            getMoreRoundLogs();
+            setInterval(getMoreRoundLogs, 1500);
+
+            $("#betForm").submit(function(event) {
+                placeBet();
+                event.preventDefault();
+            });
+
+            $("#withdrawAddressForm").validator().on('submit', function(event) {
+                if (event.isDefaultPrevented()) {}
+            });
+
+            $().alert();
+            $("#how_it_works_alert").on('closed.bs.alert', function () {
+                $.get("{% url 'hide_how_it_works' %}", function(data) {});
+            });
+
+            window.onresize = function(event) {
+                $(".dial").knob({
+                    "width": $("#roundProgressColumn").width()-1,
+                    "height": $("#roundProgressColumn").width()-1,
+                    "thickness": 0.1
+                });
+                $("#roundLogColumn").css('height',$("#roundProgressDivHolder").height());
+            };
+
+            {% comment "Disabled - Opens modal on first load" %}
+                {% if was_redirect %}
+                    $.get("/first/time", function(data) {
+                        $("#loadingBody").html(data);
+                        $("#loadingModal").modal({
+                            backdrop: false,
+                            keyboard: false,
+                            show: true
+                        });
+                    });
+                {% endif %}
+            {% endcomment %}
+        });
+        </script>
+    </head>
+    <body>
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'index_with_secret' bas.session %}">
+                        BCJP
+                    </a>
+                    <p class="navbar-text">Welcome <strong>{{ bas.alias }}</strong> to BitcoinJackpot!</p>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="javascript:infoModal('{% url 'stats' %}');">Stats</a></li>
+                        <li><a href="javascript:infoModal('{% url 'about' %}');">About</a></li>
+                        <li><a href="javascript:infoModal('{% url 'provably' %}');">Provably Fair</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row" style="padding-bottom:15px;">
+                {% if is_educational %}
+                    <div class="col-md-12">
+                        <div class="alert alert-info" role="alert" id="is_educational_alert">
+                            <strong>THIS SITE IS FOR EDUCATIONAL PURPOSES ONLY!</strong><br/> All bitcoins deposited will not be able to be returned. Withdraws have also been disabled.<br/>Enter <strong>12Ca7zoSZGj9jvSkku9FXhdCqiaJtFenws</strong> in the below textbox to get <span class="glyphicon glyphicon-btc" aria-hidden="true"></span>25 free to play BitcoinJackpot.
+                        </div>
+                    </div>
+                {% endif %}
+                {% if not hide_how_it_works %}
+                    <div class="col-md-12">
+                        <div class="alert alert-warning alert-dismissible" role="alert" id="how_it_works_alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <strong>How it works:</strong> Every 25 bets that are made the jackpot will be awarded to someone whom has placed a bet for that specific jackpot round. Every <span class="glyphicon glyphicon-btc" aria-hidden="true"></span>0.0001 is worth 1 ticket towards the jackpot. Tickets are awarded in a First Come First Serve basis.
+                        </div>
+                    </div>
+                {% endif %}
+                {% if not bas.withdraw_address %}
+                    <div class="col-md-12">
+                        <form data-toggle="validator" id="withdrawAddressForm" method="POST" action="{% url 'betting_withdraw_address' %}">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon" id="id-withdraw_address-span">Withdraw Address</span>
+                                <input type="text" class="form-control" placeholder="Please enter a withdraw address to get a BitcoinJackpot betting address" aria-describedby="id-withdraw_address-span" value="" id="ig-withdraw_address-text" name="ig-withdraw_address-text" pattern="^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$" data-error="WAT" required>
+                                <div class="help-block with-errors"></div>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">Submit</button>
+                                </span>
+                            </div>
+                            <p class="help-block"><small>By providing a withdraw address you AGREE to BitcoinJackpot's <a href="javascript:infoModal('{% url 'terms_and_conditions' %}');">Terms and Conditions</a>.</small></p>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon" id="id-address-span">Address</span>
+                            <input type="text" class="form-control" placeholder="BitcoinJackpot Address" aria-describedby="id-address-span" value="{{ bas.address }}" onClick="this.select();" id="ig-address-text" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon" id="id-balance-span">Balance in <span class="glyphicon glyphicon-btc" aria-hidden="true"></span></span>
+                            <input type="text" class="form-control" placeholder="BitcoinJackpot Balance" aria-describedby="id-balance-span" value="{{ bas.amount }}" onClick="this.select();" id="ig-balance-text" readonly>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="javascript:getWithdraw();">Withdraw</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-md-offset-4" style="padding-top:5px">
+                        <form id="betForm">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon" id="id-bet-span">Bet Amount</span>
+                                <input type="text" class="form-control" placeholder="BitcoinJackpot Bet Amount" aria-describedby="id-bet-span" value="" id="ig-bet-text" name="ig-bet-text">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">Bet</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+                <div class="col-md-12" id="withdrawColumns" style="margin-top:5px"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="roundProgressDivHolder">
+                    <div class="row">
+                        <div class="col-md-12" id="roundProgressColumn">
+                            <input type="text" value="0" class="dial" data-min="0" data-max="25" data-readOnly="true">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1 text-center" id="roundProgressColumnAmount">
+                            ~<span id="roundProgressAmount"></span> <span class="glyphicon glyphicon-btc" aria-hidden="true"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" id="roundLogColumn" style="overflow-y: scroll"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-center">
+                        <!-- Made by <a href="#"><img src="{% static 'images/o66x30.png' %}" /></a> --> <small><a href="javascript:infoModal('{% url 'terms_and_conditions' %}');">Terms and Conditions</a></small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="bettingModal">
+            <div class="modal-dialog">
+                <div class="modal-content" id="bettingModalContent">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">BitcoinJackpot Bet</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="betFormErrorDiv" style="display:none"><strong><p class="bg-danger" id="betFormError" style="padding-left:5px"></p></strong></div>
+                        <div id="betFormSuccessDiv" style="display:none"><strong><p class="bg-success" id="betFormSuccess" style="padding-left:5px"></p></strong></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="loadingModal">
+            <div class="modal-dialog">
+                <div class="modal-content" id="loadingContent">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Welcome to BitcoinJackpot</h4>
+                    </div>
+                    <div class="modal-body" id="loadingBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">I have read and agree</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="infoModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" id="infoContent">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">BitcoinJackpot</h4>
+                    </div>
+                    <div class="modal-body" id="infoBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info btn-sm" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

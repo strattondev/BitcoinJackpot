@@ -1,0 +1,66 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-btc" aria-hidden="true"></span> Bet Amount
+                </div>
+                <div class="panel-body">
+                    {{ total_bets_in_btc }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Bets
+                </div>
+                <div class="panel-body">
+                    {{ total_bets }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-btc" aria-hidden="true"></span> Payout Amount
+                </div>
+                <div class="panel-body">
+                    {{ total_payout_in_btc }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Rounds
+                </div>
+                <div class="panel-body">
+                    {{ total_rounds }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-btc" aria-hidden="true"></span> Avg Win Amount per Round
+                </div>
+                <div class="panel-body">
+                    {{ avg_round_winnings }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-btc" aria-hidden="true"></span> Top Win Amount in a Round
+                </div>
+                <div class="panel-body">
+                    {{ max_round_winnings }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

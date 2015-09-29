@@ -1,0 +1,30 @@
+{% spaceless %}
+    <table class="table table-bordered">
+        {% for i in range %}
+            {% if i == 0 %}
+                <tr>
+            {% endif %}
+            
+            {% if i != 0 and i != 25 and i|divisibleby:5 %}
+                </tr>
+                <tr>
+            {% endif %}
+
+            <td {% if i|add:1 <= progress %}class="bg-success"{% endif %}>{{ i|add:1 }}</td>
+
+            {% if i == 25 %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td colspan="5" class="text-center">
+                <h3>{{ progress }}/25</h3>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-center">
+                <h3>~{{ progress_sum }}<span class="glyphicon glyphicon-btc" aria-hidden="true"></span></h3>
+            </td>
+        </tr>
+    </table>
+{% endspaceless %}
