@@ -1,5 +1,5 @@
-# BitcoinJackpot
-Permanent URL coming soon. Bitcoin clone of [CS:GO Jackpot](https://csgojackpot.com/).
+# [BitcoinJackpot](http://bcjp.wstratto.ca)
+Located at [bcjp.wstratto.ca](http://bcjp.wstratto.ca). Bitcoin clone of [CS:GO Jackpot](https://csgojackpot.com/).
 
 #### What is BitcoinJackpot
 We are a Bitcoin based website where you can bet Bitcoins and take the chance to win BIG!
